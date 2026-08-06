@@ -31,7 +31,7 @@ describe('App', () => {
 
   it('renders the workspace heading and loaded task', async () => {
     render(<SWRConfig value={{ provider: () => new Map() }}><App /></SWRConfig>);
-    expect(screen.getByRole('heading')).toBeDefined();
+    expect(screen.getByRole('heading', { name: /Good evening/i })).toBeDefined();
     expect(await screen.findByText('Write release notes')).toBeDefined();
   });
 
