@@ -1,0 +1,18 @@
+{
+  "name": "b-tamp",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.34.3",
+  "scripts": {
+    "build": "pnpm --filter @b-tamp/backend build && pnpm --filter @b-tamp/frontend build",
+    "dev": "concurrently \"pnpm --filter @b-tamp/backend dev\" \"pnpm --filter @b-tamp/frontend dev\"",
+    "lint": "pnpm --filter @b-tamp/backend lint && pnpm --filter @b-tamp/frontend lint",
+    "test": "pnpm --filter @b-tamp/backend test && pnpm --filter @b-tamp/frontend test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "concurrently": "^9.1.2",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.3"
+  }
+}
