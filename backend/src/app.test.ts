@@ -52,4 +52,14 @@ describe('B-Tamp API', () => {
     expect(response.status).toBe(400);
     expect(response.body.success).toBe(false);
   });
+
+  it('rejects empty updates and missing tasks', async () => {
+    if (nativeDatabaseError || !app) return;
+    const invalidUpdate = await request(app).patch('/api/v1/tasks/not-real').send({});
+    expect(invalidUpdate.status).toBe(400);
+    const missing = await request(app).get('/api/v1/tasks/not-real');
+    expect(missing.status).toBe(404);
+    const missingDelete = await request(app).delete('/api/v1/tasks/not-real');
+    expect(missingDelete.status).toBe(404);
+  });
 });

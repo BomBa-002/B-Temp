@@ -2,12 +2,10 @@
  * SQLite connection and schema bootstrap.
  * @module db
  */
-import Database from 'better-sqlite3';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
+import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { env } from '@/config/env.js';
-import * as schema from '@/db/schema/tasks.js';
 
 /** Resolves a file URL or relative database path. */
 export function resolveDatabasePath(databaseUrl: string): string {
@@ -18,10 +16,10 @@ export function resolveDatabasePath(databaseUrl: string): string {
 const databasePath = resolveDatabasePath(env.DATABASE_URL);
 mkdirSync(path.dirname(databasePath), { recursive: true });
 
-/** Native SQLite handle used by diagnostics and Drizzle. */
-export const sqlite = new Database(databasePath);
-sqlite.pragma('journal_mode = WAL');
+/** Native SQLite handle used by diagnostics and repositories. */
+export const sqlite = new DatabaseSync(databasePath);
 sqlite.exec(`
+  PRAGMA journal_mode = WAL;
   CREATE TABLE IF NOT EXISTS tasks (
     id TEXT PRIMARY KEY NOT NULL,
     title TEXT NOT NULL,
@@ -30,6 +28,3 @@ sqlite.exec(`
     updated_at INTEGER NOT NULL
   )
 `);
-
-/** Typed Drizzle database instance. */
-export const db = drizzle(sqlite, { schema });
