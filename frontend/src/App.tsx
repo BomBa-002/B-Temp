@@ -1,33 +1,35 @@
-/**
- * Main task workspace UI.
- * @module App
- */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { FormEvent } from 'react';
 import useSWR from 'swr';
 import { useTranslation } from 'react-i18next';
 import { setLanguage } from '@/i18n/index.js';
 import { tasksApi, type Task } from '@/services/api.service.js';
+import { SmartInput } from '@/components/SmartInput.js';
 
 type Filter = 'all' | 'active' | 'completed';
+type Theme = 'light' | 'dark';
 
 function requestMessage(error: unknown) {
   return error instanceof Error ? error.message : 'Request failed';
 }
 
-/** Renders the task workspace and diagnostic controls. */
 export function App() {
   const { t, i18n } = useTranslation();
   const { data: tasks = [], error, isLoading, mutate } = useSWR<Task[]>('tasks', tasksApi.list);
   const [title, setTitle] = useState('');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState<Filter>('all');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingTitle, setEditingTitle] = useState('');
   const [busyId, setBusyId] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [actionError, setActionError] = useState('');
   const [diagnostic, setDiagnostic] = useState('');
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
 
   const visibleTasks = useMemo(() => {
     const query = search.trim().toLocaleLowerCase();
@@ -39,12 +41,11 @@ export function App() {
   const activeCount = tasks.filter((task) => !task.completed).length;
   const completedCount = tasks.length - activeCount;
 
-  async function addTask(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
+  async function addTask(event?: FormEvent<HTMLFormElement>) {
+    event?.preventDefault();
     const nextTitle = title.trim();
     if (!nextTitle || submitting) return;
-    setSubmitting(true);
-    setActionError('');
+    setSubmitting(true); setActionError('');
     try { await tasksApi.create(nextTitle); setTitle(''); await mutate(); } catch (requestError) { setActionError(requestMessage(requestError)); } finally { setSubmitting(false); }
   }
 
@@ -75,22 +76,18 @@ export function App() {
     <main className="shell">
       <section className="app-card" aria-labelledby="page-title">
         <header className="hero">
-          <div className="brand-mark" aria-hidden="true">B</div>
-          <div className="hero-copy"><p className="eyebrow">{t('brand')}</p><h1 id="page-title">{t('title')}</h1><p className="subtitle">{t('subtitle')}</p></div>
-          <div className="hero-actions"><button className="language" type="button" onClick={() => void setLanguage(i18n.language === 'en' ? 'ar' : 'en')}>{t('language')}</button><div className="status-pill"><span className="status-dot" />{t('online')}</div></div>
+          <div className="hero-topline"><span className="brand-mark" aria-hidden="true">B</span><p className="eyebrow">{t('brand')}</p><div className="hero-actions"><button className="quiet-control" type="button" aria-label={t('toggleTheme')} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>{theme === 'dark' ? '☼' : '◐'}</button><button className="quiet-control" type="button" onClick={() => void setLanguage(i18n.language === 'en' ? 'ar' : 'en')}>{t('language')}</button></div></div>
+          <div className="hero-copy"><h1 id="page-title">{t('title')}</h1><p className="subtitle">{t('subtitle')}</p></div>
+          <div className="connection"><span className="status-dot" />{t('online')}</div>
         </header>
 
         <form className="composer" onSubmit={addTask}>
-          <label className="sr-only" htmlFor="task-title">{t('newTask')}</label>
-          <input id="task-title" value={title} onChange={(event) => setTitle(event.target.value)} placeholder={t('newTask')} maxLength={200} disabled={submitting} />
-          <button type="submit" disabled={submitting || !title.trim()}>{submitting ? t('saving') : t('add')} <span aria-hidden="true">+</span></button>
+          <SmartInput id="task-title" label={t('newTask')} value={title} placeholder=" " disabled={submitting} maxLength={200} onChange={setTitle} onSubmit={() => void addTask()} />
+          <button className="primary-action" type="submit" disabled={submitting || !title.trim()}>{submitting ? t('saving') : t('add')} <span aria-hidden="true">→</span></button>
         </form>
 
-        <div className="toolbar">
-          <div className="summary"><strong>{activeCount}</strong> {t('active')}<span className="summary-separator">/</span><strong>{completedCount}</strong> {t('completed')}</div>
-          <div className="filters" role="group" aria-label={t('filterTasks')}>{(['all', 'active', 'completed'] as const).map((option) => <button key={option} className={filter === option ? 'filter active' : 'filter'} onClick={() => setFilter(option)} type="button">{t(option)}</button>)}</div>
-        </div>
-        <div className="search-row"><label className="sr-only" htmlFor="task-search">{t('search')}</label><input id="task-search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('search')} /><span>{visibleTasks.length} / {tasks.length}</span></div>
+        <div className="workspace-meta"><div className="summary"><strong>{activeCount}</strong> {t('active')}<span className="summary-separator">/</span><strong>{completedCount}</strong> {t('completed')}</div><div className="filters" role="group" aria-label={t('filterTasks')}>{(['all', 'active', 'completed'] as const).map((option) => <button key={option} className={filter === option ? 'filter active' : 'filter'} onClick={() => setFilter(option)} type="button">{t(option)}</button>)}</div></div>
+        <div className="search-row"><SmartInput id="task-search" label={t('search')} value={search} type="search" onChange={setSearch} /><span>{visibleTasks.length} / {tasks.length}</span></div>
         <div className="diagnostics"><button type="button" onClick={() => void runDiagnostic('health')}>{t('testApi')}</button><button type="button" onClick={() => void runDiagnostic('database')}>{t('testDb')}</button>{diagnostic && <code role="status">{diagnostic}</code>}</div>
         {actionError && <p className="error" role="alert">{actionError}</p>}
         {isLoading && <p className="empty-state" role="status">{t('loading')}</p>}
@@ -103,7 +100,7 @@ export function App() {
             {editingId !== task.id && <div className="task-actions"><button className="edit" type="button" disabled={busyId === task.id} onClick={() => { setEditingId(task.id); setEditingTitle(task.title); }}>{t('edit')}</button><button className="delete" type="button" disabled={busyId === task.id} aria-label={`${t('delete')} ${task.title}`} onClick={() => void removeTask(task)}>{t('delete')}</button></div>}
           </li>)}
         </ul>
-        <footer className="footer"><span>{t('local')}</span><span>BUILD 0.3</span></footer>
+        <footer className="footer"><span>{t('local')}</span><span>BUILD 0.4</span></footer>
       </section>
     </main>
   );
