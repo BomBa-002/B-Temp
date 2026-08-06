@@ -5,6 +5,7 @@
     "lib": ["ES2018", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "types": ["vite/client"],
     "baseUrl": ".",
     "paths": {
       "@a": ["src/alias/index.ts"]

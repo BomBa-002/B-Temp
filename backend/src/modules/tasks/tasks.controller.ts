@@ -15,13 +15,23 @@ const updateTaskSchema = z
     message: 'At least one field is required',
   });
 
+function getTaskId(request: Request): string | undefined {
+  const value = request.params.id;
+  return typeof value === 'string' ? value : undefined;
+}
+
 export const tasksController = {
   list(_request: Request, response: Response) {
     response.json({ data: tasksService.list(), error: null });
   },
 
   get(request: Request, response: Response) {
-    const task = tasksService.get(request.params.id);
+    const id = getTaskId(request);
+    if (!id) {
+      response.status(400).json({ data: null, error: 'Invalid task id' });
+      return;
+    }
+    const task = tasksService.get(id);
     if (!task) {
       response.status(404).json({ data: null, error: 'Task not found' });
       return;
@@ -50,8 +60,14 @@ export const tasksController = {
       return;
     }
 
+    const id = getTaskId(request);
+    if (!id) {
+      response.status(400).json({ data: null, error: 'Invalid task id' });
+      return;
+    }
+
     try {
-      const task = tasksService.update(request.params.id, result.data);
+      const task = tasksService.update(id, result.data);
       if (!task) {
         response.status(404).json({ data: null, error: 'Task not found' });
         return;
@@ -63,7 +79,12 @@ export const tasksController = {
   },
 
   remove(request: Request, response: Response) {
-    const deleted = tasksService.remove(request.params.id);
+    const id = getTaskId(request);
+    if (!id) {
+      response.status(400).json({ data: null, error: 'Invalid task id' });
+      return;
+    }
+    const deleted = tasksService.remove(id);
     if (!deleted) {
       response.status(404).json({ data: null, error: 'Task not found' });
       return;
