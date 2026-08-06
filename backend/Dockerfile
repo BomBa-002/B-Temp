@@ -16,4 +16,5 @@ RUN corepack enable && pnpm install --filter @b-tamp/backend --prod --frozen-loc
 COPY --from=build /app/backend/dist ./backend/dist
 RUN mkdir -p /app/data
 EXPOSE 4000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 CMD wget -qO- http://127.0.0.1:4000/api/v1/health || exit 1
 CMD ["node", "backend/dist/server.js"]

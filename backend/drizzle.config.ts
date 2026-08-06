@@ -1,3 +1,7 @@
+/**
+ * Drizzle migration configuration.
+ * @module drizzle.config
+ */
 import { defineConfig } from 'drizzle-kit';
 
 export default defineConfig({

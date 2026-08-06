@@ -1,3 +1,7 @@
+/**
+ * SQLite connection and schema bootstrap.
+ * @module db
+ */
 import Database from 'better-sqlite3';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { mkdirSync } from 'node:fs';
@@ -5,7 +9,8 @@ import path from 'node:path';
 import { env } from '@/config/env.js';
 import * as schema from '@/db/schema/tasks.js';
 
-function resolveDatabasePath(databaseUrl: string): string {
+/** Resolves a file URL or relative database path. */
+export function resolveDatabasePath(databaseUrl: string): string {
   const databasePath = databaseUrl.replace(/^file:/, '');
   return path.isAbsolute(databasePath) ? databasePath : path.resolve(process.cwd(), databasePath);
 }
@@ -13,7 +18,8 @@ function resolveDatabasePath(databaseUrl: string): string {
 const databasePath = resolveDatabasePath(env.DATABASE_URL);
 mkdirSync(path.dirname(databasePath), { recursive: true });
 
-const sqlite = new Database(databasePath);
+/** Native SQLite handle used by diagnostics and Drizzle. */
+export const sqlite = new Database(databasePath);
 sqlite.pragma('journal_mode = WAL');
 sqlite.exec(`
   CREATE TABLE IF NOT EXISTS tasks (
@@ -25,4 +31,5 @@ sqlite.exec(`
   )
 `);
 
+/** Typed Drizzle database instance. */
 export const db = drizzle(sqlite, { schema });

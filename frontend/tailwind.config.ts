@@ -1,3 +1,7 @@
+/**
+ * Tailwind CSS configuration.
+ * @module tailwind.config
+ */
 import type { Config } from 'tailwindcss';
 
 export default {

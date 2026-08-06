@@ -1,3 +1,7 @@
+/**
+ * Compatibility aliases for shared React imports.
+ * @module alias
+ */
 export {
   default as React,
   useState,
