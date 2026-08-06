@@ -9,7 +9,7 @@ export type Task = { id: string; title: string; completed: boolean; createdAt: s
 /** Standard API envelope. */
 export type ApiResponse<T> = { success: boolean; data: T; error: unknown; meta: unknown };
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api/v1', headers: { 'Content-Type': 'application/json' } });
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api/v1', headers: { 'Content-Type': 'application/json' } });
 
 api.interceptors.response.use((response) => response, (error) => Promise.reject(new Error(error.response?.data?.error?.message ?? error.response?.data?.error ?? 'Request failed')));
 
