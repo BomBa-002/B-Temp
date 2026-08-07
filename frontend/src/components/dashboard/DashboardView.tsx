@@ -3,24 +3,23 @@ import { Icon } from '@/components/Icon.js';
 
 type DashboardViewProps = { t: (key: string) => string; sectionLabel: string };
 
-const metrics = [
-  { value: '1,248', label: 'totalRecords', icon: 'users' as const, change: '+12.4%' },
-  { value: '88.6%', label: 'completionRate', icon: 'activity' as const, change: '+4.8%' },
-  { value: '742', label: 'activeItems', icon: 'boxes' as const, change: '+8.2%' },
-  { value: '24', label: 'openAlerts', icon: 'bell' as const, change: '-2.1%' },
+const funnel = [
+  { label: 'Lead to Opportunity', value: '1,000', width: '100%' },
+  { label: 'Opportunity to Proposal', value: '958', width: '76%' },
+  { label: 'Proposal to Negotiate', value: '147', width: '52%' },
+  { label: 'Negotiate to Closed Won', value: '57', width: '30%' },
 ];
+const trend = [46, 58, 52, 66, 62, 79, 69, 88, 78, 94];
 
-const trend = [38, 46, 42, 58, 54, 69, 64, 81, 76, 88, 83, 96];
+function Ring({ value, label, tone = 'amber' }: { value: string; label: string; tone?: 'amber' | 'cyan' }) {
+  return <div className={`kpi-ring kpi-ring-${tone}`}><div><strong>{value}</strong><span>{label}</span></div></div>;
+}
 
-/** Presentation-only dashboard surface with domain-neutral metrics. */
+/** High-density KPI composition matching the reusable enterprise dashboard reference. */
 export function DashboardView({ t, sectionLabel }: DashboardViewProps) {
-  return <div className="dashboard-view">
-    <section className="dashboard-heading"><div><p className="dash-eyebrow">{t('workspace')}</p><h1>{sectionLabel}</h1><p className="dash-subtitle">{t('dashboardSubtitle')}</p></div><div className="heading-actions"><span className="live-indicator"><i />{t('liveData')}</span><button className="btn btn-quiet" type="button"><Icon name="download" size={16} />{t('export')}</button></div></section>
-    <section className="metric-grid" aria-label={t('keyMetrics')}>{metrics.map((metric) => <article className="metric-card" key={metric.label}><div className="metric-icon"><Icon name={metric.icon} size={19} /></div><div className="metric-copy"><span>{t(metric.label)}</span><strong>{metric.value}</strong><small className={metric.change.startsWith('-') ? 'metric-change is-negative' : 'metric-change'}>{metric.change} <em>{t('vsPrevious')}</em></small></div></article>)}</section>
-    <section className="dashboard-grid">
-      <article className="panel performance-panel"><div className="panel-heading"><div><p className="section-kicker">{t('overview')}</p><h2>{t('performanceOverview')}</h2></div><button className="icon-btn" type="button" aria-label={t('openSettings')}><Icon name="more" /></button></div><div className="chart-area" aria-label={t('performanceChart')} role="img"><div className="chart-y-axis"><span>100%</span><span>75%</span><span>50%</span><span>25%</span><span>0%</span></div><div className="chart-bars">{trend.map((height, index) => <div className="bar-column" key={`${height}-${index}`}><div className="bar" style={{ height: `${height}%` }} /><span>{['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'][index]}</span></div>)}</div></div><div className="panel-footer"><span><i className="legend-dot" />{t('currentPeriod')}</span><strong>+18.6%</strong></div></article>
-      <article className="panel progress-panel"><div className="panel-heading"><div><p className="section-kicker">{t('target')}</p><h2>{t('progress')}</h2></div><Icon name="target" /></div><div className="progress-ring" style={{ '--progress': '74%' } as CSSProperties}><strong>74%</strong><span>{t('achieved')}</span></div><div className="target-note"><span>{t('targetValue')}</span><strong>1.2M</strong></div></article>
-    </section>
-    <section className="dashboard-grid lower-grid"><article className="panel activity-panel"><div className="panel-heading"><div><p className="section-kicker">{t('recent')}</p><h2>{t('recentActivity')}</h2></div><button className="text-button" type="button">{t('viewAll')}</button></div><ul className="activity-list">{['activityOne', 'activityTwo', 'activityThree', 'activityFour'].map((item, index) => <li key={item}><span className={`activity-avatar avatar-${index + 1}`}>{['AH', 'SD', 'GR', 'MK'][index]}</span><div><strong>{t(item)}</strong><small>{t('justNow')}</small></div><Icon name="arrow" size={15} /></li>)}</ul></article><article className="panel status-panel"><div className="panel-heading"><div><p className="section-kicker">{t('system')}</p><h2>{t('moduleStatus')}</h2></div><span className="status-badge success">{t('operational')}</span></div><div className="module-status"><span><i className="status-dot" />{t('apiGateway')}</span><strong>99.98%</strong></div><div className="module-status"><span><i className="status-dot" />{t('dataLayer')}</span><strong>99.91%</strong></div><div className="module-status"><span><i className="status-dot" />{t('notificationService')}</span><strong>99.86%</strong></div><div className="status-foot"><Icon name="check" size={16} />{t('allSystemsOperational')}</div></article></section>
+  return <div className="dashboard-view reference-dashboard">
+    <section className="dashboard-heading"><div className="dashboard-title"><p className="dash-eyebrow">{t('workspace')}</p><h1>{sectionLabel}</h1></div><div className="dashboard-tools"><label className="system-search"><Icon name="search" size={16} /><input aria-label={t('searchSystem')} placeholder={t('searchSystem')} /></label><button className="icon-btn" type="button" aria-label={t('notifications')}><Icon name="bell" /></button><button className="avatar-button" type="button" aria-label={t('profile')}>AH</button></div></section>
+    <section className="kpi-frame"><header className="kpi-frame-title">{t('keyMetrics')}</header><div className="kpi-hero"><article className="funnel-card"><h2>{t('salesFunnel')}</h2><div className="funnel-stages">{funnel.map((stage) => <div className="funnel-stage" key={stage.label}><span className="funnel-label">{t(stage.label)}</span><div className="funnel-shape" style={{ '--funnel-width': stage.width } as CSSProperties}><strong>{stage.value}</strong></div><span className="funnel-rate">{stage.value === '57' ? '35%' : stage.value === '147' ? '12.3%' : stage.value === '958' ? '3.00%' : '25.6%'}</span></div>)}</div></article><article className="revenue-card"><h2>{t('revenueTarget')}</h2><Ring value="88%" label={t('targetReached')} tone="cyan" /><p><strong>FY TARGET: 1.2M</strong><span>REVENUE SO FAR: 1.05M</span></p></article></div></section>
+    <section className="kpi-grid"><article className="kpi-panel"><h2>{t('productPerformance')}</h2><Ring value="74%" label={t('topSelling')} /><p><strong>{t('bestSeller')}: Pro Series</strong><span>{t('unitGrowth')}: +12%</span></p></article><article className="kpi-panel"><h2>{t('customerAcquisition')}</h2><Ring value="9%" label={t('growth')} /><p><strong>{t('newCustomers')}: +114</strong><span>{t('averageDeal')}: 8.5K</span></p></article><article className="kpi-panel trend-panel"><h2>{t('monthlyTrend')}</h2><div className="trend-chart" role="img" aria-label={t('monthlyTrend')}>{trend.map((height, index) => <span key={`${height}-${index}`} style={{ height: `${height}%` }} />)}</div><div className="trend-labels"><b>JUL · 145K</b><b>AUG · 155K</b></div><p>{t('monthlyTrend')}</p></article></section>
   </div>;
 }

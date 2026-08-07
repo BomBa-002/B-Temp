@@ -28,7 +28,7 @@ export function App() {
   const nav = [
     { key: 'dashboard' as const, label: t('navDashboard'), icon: 'grid' as const }, { key: 'leads' as const, label: t('navLeads'), icon: 'users' as const }, { key: 'orders' as const, label: t('navOrders'), icon: 'cart' as const }, { key: 'inventory' as const, label: t('navInventory'), icon: 'boxes' as const }, { key: 'pipeline' as const, label: t('navPipeline'), icon: 'funnel' as const }, { key: 'reports' as const, label: t('navReports'), icon: 'chart' as const }, { key: 'settings' as const, label: t('navSettings'), icon: 'settings' as const },
   ];
-  const defaultProps = { t, clock, theme, brandName: t('brandName'), portal: t('portal'), onToggleTheme: () => setTheme((current) => current === 'dark' ? 'light' : 'dark'), onToggleLanguage: toggleLanguage, onEnter: () => setMode('auth') };
+  const defaultProps = { t, clock, theme, brandName: t('brandName'), portal: t('portal'), onToggleTheme: () => setTheme((current) => current === 'dark' ? 'light' : 'dark'), onToggleLanguage: toggleLanguage, onEnter: () => setMode('auth'), onSuccess: () => setMode('app') };
   if (mode === 'splash') return <SplashScreen {...defaultProps} />;
   if (mode === 'error') return <ErrorScreen {...defaultProps} />;
   if (mode === 'auth') return <AuthScreen {...defaultProps} />;
