@@ -1,6 +1,6 @@
 import type { ReactNode, SVGProps } from 'react';
 
-export type IconName = 'grid' | 'list' | 'chart' | 'user' | 'settings' | 'sun' | 'moon' | 'globe' | 'menu' | 'close' | 'check' | 'plus' | 'search' | 'edit' | 'trash' | 'arrow' | 'refresh' | 'terminal' | 'users' | 'activity' | 'boxes' | 'bell' | 'download' | 'more' | 'target' | 'database' | 'cart' | 'funnel';
+export type IconName = 'grid' | 'list' | 'chart' | 'user' | 'settings' | 'sun' | 'moon' | 'globe' | 'menu' | 'close' | 'check' | 'plus' | 'search' | 'edit' | 'trash' | 'arrow' | 'refresh' | 'terminal' | 'users' | 'activity' | 'boxes' | 'bell' | 'download' | 'more' | 'target' | 'database' | 'cart' | 'funnel' | 'key' | 'mail';
 
 const paths: Record<IconName, ReactNode> = {
   grid: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
@@ -31,6 +31,8 @@ const paths: Record<IconName, ReactNode> = {
   database: <><ellipse cx="12" cy="5" rx="8" ry="3" /><path d="M4 5v7c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12v7c0 1.7 3.6 3 8 3s8-1.3 8-3v-7" /></>,
   cart: <><path d="M3 4h2l2 11h10l3-8H6" /><circle cx="9" cy="20" r="1" /><circle cx="17" cy="20" r="1" /></>,
   funnel: <path d="M3 4h18l-7 8v6l-4 2v-8L3 4Z" />,
+  key: <><circle cx="8" cy="15" r="4" /><path d="m11 12 9-9M15 8l2 2M18 5l2 2" /></>,
+  mail: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3 7 9 6 9-6" /></>,
 };
 
 export function Icon({ name, size = 20, ...props }: { name: IconName; size?: number } & SVGProps<SVGSVGElement>) {
