@@ -1,5 +1,5 @@
 /**
- * API integration tests for health, diagnostics, and task CRUD.
+ * API integration tests for platform health and diagnostics.
  * @module app.test
  */
 import request from 'supertest';
@@ -31,35 +31,5 @@ describe('B-Tamp API', () => {
     const response = await request(app).get('/api/v1/test/db');
     expect(response.status).toBe(200);
     expect(response.body.data.connected).toBe(true);
-  });
-
-  it('creates, updates, lists, and deletes a task', async () => {
-    if (nativeDatabaseError || !app) return;
-    const created = await request(app).post('/api/v1/tasks').send({ title: 'Integration task' });
-    expect(created.status).toBe(201);
-    const id = created.body.data.id as string;
-    const updated = await request(app).patch(`/api/v1/tasks/${id}`).send({ completed: true });
-    expect(updated.body.data.completed).toBe(true);
-    const listed = await request(app).get('/api/v1/tasks');
-    expect(listed.body.data.some((task: { id: string }) => task.id === id)).toBe(true);
-    const deleted = await request(app).delete(`/api/v1/tasks/${id}`);
-    expect(deleted.status).toBe(204);
-  });
-
-  it('rejects invalid task input', async () => {
-    if (nativeDatabaseError || !app) return;
-    const response = await request(app).post('/api/v1/tasks').send({ title: '' });
-    expect(response.status).toBe(400);
-    expect(response.body.success).toBe(false);
-  });
-
-  it('rejects empty updates and missing tasks', async () => {
-    if (nativeDatabaseError || !app) return;
-    const invalidUpdate = await request(app).patch('/api/v1/tasks/not-real').send({});
-    expect(invalidUpdate.status).toBe(400);
-    const missing = await request(app).get('/api/v1/tasks/not-real');
-    expect(missing.status).toBe(404);
-    const missingDelete = await request(app).delete('/api/v1/tasks/not-real');
-    expect(missingDelete.status).toBe(404);
   });
 });

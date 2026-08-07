@@ -16,3 +16,4 @@
 {"durationMs":0,"level":"info","message":"http_request","method":"PATCH","path":"/api/v1/tasks/not-real","status":400,"timestamp":"2026-08-06T14:22:48.331Z"}
 {"durationMs":1,"level":"info","message":"http_request","method":"GET","path":"/api/v1/tasks/not-real","status":404,"timestamp":"2026-08-06T14:22:48.333Z"}
 {"durationMs":0,"level":"info","message":"http_request","method":"DELETE","path":"/api/v1/tasks/not-real","status":404,"timestamp":"2026-08-06T14:22:48.335Z"}
+{"level":"info","message":"server_started","port":4000,"timestamp":"2026-08-07T11:39:22.759Z"}
